@@ -1,4 +1,6 @@
 
+set -x
+
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
   # webp, zstd, xz, libtiff cause a conflict with building webp and libtiff
   # curl from brew requires zstd, use system curl
@@ -21,7 +23,7 @@ fi
 echo "::group::Install a virtualenv"
   source multibuild/common_utils.sh
   source multibuild/travis_steps.sh
-  python3 -m pip install virtualenv
+  # python3 -m pip install virtualenv
   before_install
 echo "::endgroup::"
 

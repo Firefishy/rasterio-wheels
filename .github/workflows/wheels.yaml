@@ -10,13 +10,16 @@ env:
 jobs:
   build:
     name: ${{ matrix.python }} ${{ matrix.os-name }} ${{ matrix.platform }}
-    runs-on: ${{ matrix.os }}
+    # runs-on: ${{ matrix.os }}
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
-        os: [ "ubuntu-20.04", "macos-12" ]
+        # os: [ "ubuntu-20.04", "macos-12" ]
+        os: [ "ubuntu-20.04" ]
         python: [ "3.8" , "3.9", "3.10", "3.11", "3.12" ]
-        platform: [ "x86_64", "aarch64" ]
+        # platform: [ "x86_64", "aarch64" ]
+        platform: [ "aarch64" ]
         macos-target: [ "10.15" ]
         exclude:
           - os: "macos-12"
@@ -24,8 +27,8 @@ jobs:
           - os: "macos-12"
             platform: "aarch64"
         include:
-          - os: "macos-12"
-            os-name: "osx"
+        #   - os: "macos-12"
+        #     os-name: "osx"
           - os: "ubuntu-20.04"
             os-name: "focal"
     env:
@@ -40,15 +43,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          image: tonistiigi/binfmt:master # lastest is recommended but faster qemu v8 is only currently available on master.
-          platforms: linux/arm64
-        if: startsWith(matrix.os, 'ubuntu')
+      # - uses: actions/setup-python@v4
+      #   with:
+      #     python-version: "3.x"
+      # - name: Set up QEMU
+      #   uses: docker/setup-qemu-action@v3
+      #   with:
+      #     image: tonistiigi/binfmt:master # latest is recommended but faster qemu v8 is only currently available on master.
+      #     platforms: linux/arm64
+      #   if: startsWith(matrix.os, 'ubuntu')
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         if: startsWith(matrix.os, 'ubuntu')
@@ -59,20 +62,20 @@ jobs:
           name: wheels
           path: wheelhouse/*.whl
 
-  release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    if: "startsWith(github.ref, 'refs/tags/')"
-    needs: build
-    steps:
-      - uses: actions/download-artifact@v2
-        with:
-          name: wheels
-      - name: Upload Release
-        uses: fnkr/github-action-ghr@v1.3
-        env:
-          GHR_PATH: .
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # release:
+  #   name: Create Release
+  #   runs-on: ubuntu-latest
+  #   if: "startsWith(github.ref, 'refs/tags/')"
+  #   needs: build
+  #   steps:
+  #     - uses: actions/download-artifact@v2
+  #       with:
+  #         name: wheels
+  #     - name: Upload Release
+  #       uses: fnkr/github-action-ghr@v1.3
+  #       env:
+  #         GHR_PATH: .
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   success:
     needs: [build]

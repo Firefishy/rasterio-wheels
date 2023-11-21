@@ -1,7 +1,8 @@
 ---
 name: Windows wheels
 
-on: [push, pull_request, workflow_dispatch]
+#on: [push, pull_request, workflow_dispatch]
+on: [workflow_dispatch]
 
 env:
   REF: 1.3.9
